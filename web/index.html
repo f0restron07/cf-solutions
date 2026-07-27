@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>cf → IntelliJ</title>
+<style>
+  :root { --bg:#0f1115; --card:#171a21; --line:#272b34; --fg:#e6e9ef;
+          --muted:#9aa3b2; --accent:#3b82f6; --ok:#22c55e; --err:#ef4444; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; background:var(--bg); color:var(--fg);
+         font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+         display:flex; align-items:center; justify-content:center; padding:24px; }
+  .card { width:100%; max-width:560px; background:var(--card);
+          border:1px solid var(--line); border-radius:16px; padding:28px 26px;
+          box-shadow:0 12px 40px rgba(0,0,0,.35); }
+  h1 { font-size:18px; margin:0 0 2px; letter-spacing:.2px; }
+  p.sub { margin:0 0 20px; color:var(--muted); font-size:13px; }
+  .row { display:flex; gap:10px; }
+  input[type=text] { flex:1; padding:12px 14px; border-radius:10px;
+          border:1px solid var(--line); background:#0d0f14; color:var(--fg);
+          font-size:14px; outline:none; }
+  input[type=text]:focus { border-color:var(--accent); }
+  button { border:0; border-radius:10px; padding:12px 16px; font-size:14px;
+           font-weight:600; color:#fff; background:var(--accent); cursor:pointer;
+           white-space:nowrap; }
+  button:hover { filter:brightness(1.08); }
+  button:disabled { opacity:.55; cursor:default; }
+  button.ghost { background:#222734; color:var(--fg); border:1px solid var(--line); }
+  .out { margin-top:18px; font-size:13px; }
+  .result { border:1px solid var(--line); border-radius:12px; padding:14px 16px;
+            background:#0d0f14; display:none; }
+  .result.show { display:block; }
+  .result .name { font-weight:600; font-size:15px; margin-bottom:6px; }
+  .kv { display:flex; gap:8px; color:var(--muted); flex-wrap:wrap; }
+  .pill { background:#1c2430; border:1px solid var(--line); border-radius:999px;
+          padding:2px 10px; font-size:12px; color:var(--fg); }
+  .path { margin-top:8px; color:var(--muted); font-family:ui-monospace,Menlo,monospace;
+          font-size:12px; word-break:break-all; }
+  .msg { margin-top:12px; font-size:13px; min-height:18px; }
+  .msg.ok { color:var(--ok); } .msg.err { color:var(--err); }
+  .foot { margin-top:20px; display:flex; justify-content:space-between;
+          align-items:center; color:var(--muted); font-size:12px; }
+  a { color:var(--accent); text-decoration:none; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Codeforces → IntelliJ</h1>
+    <p class="sub">Paste a problem link. It creates the Java class in the right rating package and opens it.</p>
+
+    <div class="row">
+      <input id="url" type="text" placeholder="https://codeforces.com/problemset/problem/4/A" autofocus />
+      <button id="go">Create &amp; Open</button>
+    </div>
+
+    <div class="out">
+      <div id="result" class="result">
+        <div class="name" id="r-name"></div>
+        <div class="kv">
+          <span class="pill" id="r-rating"></span>
+          <span class="pill" id="r-package"></span>
+          <span class="pill" id="r-class"></span>
+        </div>
+        <div class="path" id="r-path"></div>
+      </div>
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <div class="foot">
+      <span>Auto-push on save is running with <code>serve</code>.</span>
+      <button class="ghost" id="push">Push now</button>
+    </div>
+  </div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const urlBox = $('url'), go = $('go'), result = $('result'), msg = $('msg');
+
+  function setMsg(text, cls){ msg.textContent = text; msg.className = 'msg ' + (cls||''); }
+
+  async function create(){
+    const url = urlBox.value.trim();
+    if(!url){ setMsg('Paste a problem link first.', 'err'); return; }
+    go.disabled = true; setMsg('Working…');
+    try{
+      const r = await fetch('/api/new', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({url})
+      });
+      const d = await r.json();
+      if(!d.ok){ setMsg(d.error || 'Something went wrong.', 'err'); result.classList.remove('show'); }
+      else{
+        $('r-name').textContent = d.name;
+        $('r-rating').textContent = d.rating ? ('rating ' + d.rating) : 'unrated';
+        $('r-package').textContent = d.package;
+        $('r-class').textContent = d.className + '.java';
+        $('r-path').textContent = d.path;
+        result.classList.add('show');
+        setMsg(d.created ? 'Created and opening in IntelliJ ✓' : 'Already existed — opened in IntelliJ ✓', 'ok');
+        urlBox.select();
+      }
+    }catch(e){ setMsg('Server not reachable. Is `python3 cf.py serve` running?', 'err'); }
+    go.disabled = false;
+  }
+
+  async function pushNow(){
+    setMsg('Pushing…');
+    try{
+      const r = await fetch('/api/push', {method:'POST'});
+      const d = await r.json();
+      setMsg(d.detail || (d.pushed ? 'Pushed ✓' : (d.committed ? 'Committed ✓' : 'Nothing to push')),
+             d.ok ? 'ok' : 'err');
+    }catch(e){ setMsg('Server not reachable.', 'err'); }
+  }
+
+  go.addEventListener('click', create);
+  urlBox.addEventListener('keydown', e => { if(e.key === 'Enter') create(); });
+  $('push').addEventListener('click', pushNow);
+</script>
+</body>
+</html>
