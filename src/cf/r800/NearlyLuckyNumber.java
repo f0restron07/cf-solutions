@@ -1,4 +1,4 @@
-package cf.r800;
+    package cf.r800;
 
 /*
  *  Nearly Lucky Number
