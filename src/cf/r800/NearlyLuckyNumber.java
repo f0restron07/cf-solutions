@@ -14,7 +14,8 @@ public class NearlyLuckyNumber {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
-
+        int n=br.readLine();
+        
         // TODO: read input and solve
         // int n = Integer.parseInt(br.readLine().trim());
 
