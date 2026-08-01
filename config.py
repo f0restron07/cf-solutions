@@ -8,9 +8,10 @@ import shutil
 # so you normally don't need to touch it.
 REPO_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Where .java files are written. Solutions land in <SRC_DIR>/cf/r800/Name.java
+# Where solutions are written. Each problem gets its own folder and the class
+# is always `Main` (no package): <SRC_DIR>/cf/r800/ProblemName/Main.java
 SRC_DIR = os.path.join(REPO_DIR, "src")
-BASE_PACKAGE = "cf"          # java packages become cf.r800, cf.r900, ...
+BASE_PACKAGE = "cf"          # top folder under src/ (a plain dir now, not a java package)
 
 # --- git / GitHub ----------------------------------------------------------
 GIT_REMOTE = "origin"        # name of your github remote
