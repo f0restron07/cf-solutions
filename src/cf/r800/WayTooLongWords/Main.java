@@ -1,16 +1,14 @@
-package cf.r1000;
-
 /*
- *  Theatre Square
- *  rating 1000  |  tags: math
- *  https://codeforces.com/problemset/problem/1/A
+ *  Way Too Long Words
+ *  rating 800  |  tags: strings
+ *  https://codeforces.com/problemset/problem/71/A
  *  created 2026-07-27
  */
 
 import java.io.*;
 import java.util.*;
 
-public class TheatreSquare {
+public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();

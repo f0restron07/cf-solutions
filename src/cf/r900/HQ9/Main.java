@@ -1,5 +1,3 @@
-package cf.r900;
-
 /*
  *  HQ9+
  *  rating 900  |  tags: implementation
@@ -10,7 +8,7 @@ package cf.r900;
 import java.io.*;
 import java.util.*;
 
-public class HQ9 {
+public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
@@ -20,8 +18,11 @@ public class HQ9 {
         String s=br.read();
         int n=s.length();
         for(int i=0;i<n;i++){
-            if(s.charAt(i)=='H')
+            if(s.charAt(i)=='H'||s.charAt(i)=='Q'||s.charAt(i)=='+'||s.charAt(i)=='99'){
+                System.out.println("YES");
+                break;
+            }
         }
-        System.out.print(sb);
+        System.out.print("NO");
     }
 }
