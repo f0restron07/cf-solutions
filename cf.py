@@ -174,9 +174,7 @@ def sanitize_class(name):
     return cls
 
 
-JAVA_TEMPLATE = """package {pkg};
-
-/*
+JAVA_TEMPLATE = """/*
  *  {name}
  *  rating {rating}{tagline}
  *  {url}
@@ -186,7 +184,7 @@ JAVA_TEMPLATE = """package {pkg};
 import java.io.*;
 import java.util.*;
 
-public class {cls} {{
+public class Main {{
     public static void main(String[] args) throws IOException {{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
