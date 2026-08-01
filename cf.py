@@ -308,7 +308,7 @@ def _porcelain():
 def _message_from_status(status):
     names = []
     for line in status.splitlines():
-        m = re.search(r"src/%s/(r\w+)/(\w+)\.java" % re.escape(config.BASE_PACKAGE), line)
+        m = re.search(r"src/%s/(r\w+)/(\w+)/Main\.java" % re.escape(config.BASE_PACKAGE), line)
         if m:
             names.append(f"{m.group(1)}/{m.group(2)}")
     if names:
