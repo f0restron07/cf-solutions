@@ -18,8 +18,11 @@ public class NearlyLuckyNumber {
         
         // TODO: read input and solve
         // int n = Integer.parseInt(br.readLine().trim());
-        int n=Integer.parseInt(br.readLine());
-        
+        String s=br.readLine().trim();
+        int c=0;
+        for(int i=0;i<s.length();i++)if(s.charAt(i)=='4'||s.charAt(i)=='7')c++;
+        System.out.print(c==4||c==7?"YES":"NO");
+
         System.out.print(sb);
     }
 }
