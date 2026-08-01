@@ -232,17 +232,17 @@ def resolve_paths(contest_id, index, meta, is_gym=False):
 def create_problem(url, open_ide=True):
     contest_id, index, is_gym = parse_url(url)
     meta = get_meta(contest_id, index, is_gym)
-    pkg, pkg_dir, cls, path, canon = resolve_paths(contest_id, index, meta, is_gym)
+    label, prob_dir, cls, path, canon = resolve_paths(contest_id, index, meta, is_gym)
 
     created = not os.path.exists(path)
     if created:
-        os.makedirs(pkg_dir, exist_ok=True)
+        os.makedirs(prob_dir, exist_ok=True)
         tagline = ("  |  tags: " + ", ".join(meta["tags"])) if meta["tags"] else ""
         with open(path, "w", encoding="utf-8") as f:
             f.write(JAVA_TEMPLATE.format(
-                pkg=pkg, name=meta["name"],
+                name=meta["name"],
                 rating=meta["rating"] if meta["rating"] else "unrated",
-                tagline=tagline, url=canon, today=date.today().isoformat(), cls=cls))
+                tagline=tagline, url=canon, today=date.today().isoformat()))
 
     # remember url -> file so `test` and repeat `new` always hit the same class
     idx = _load_index()
@@ -253,7 +253,7 @@ def create_problem(url, open_ide=True):
         open_in_idea(path)
 
     return {"ok": True, "created": created, "name": meta["name"],
-            "rating": meta["rating"], "package": pkg, "className": cls,
+            "rating": meta["rating"], "package": label, "className": cls,
             "path": path, "url": canon}
 
 
