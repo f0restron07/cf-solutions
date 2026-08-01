@@ -398,7 +398,7 @@ def scrape_samples(contest_id, index, is_gym=False):
 def cmd_test(url):
     contest_id, index, is_gym = parse_url(url)
     meta = get_meta(contest_id, index, is_gym)
-    pkg, _, cls, path, _ = resolve_paths(contest_id, index, meta, is_gym)
+    _, _, cls, path, _ = resolve_paths(contest_id, index, meta, is_gym)
     if not os.path.exists(path):
         log("no file yet -- run `cf.py new <url>` first."); return 1
     out_dir = os.path.join(config.REPO_DIR, ".out")
@@ -407,7 +407,7 @@ def cmd_test(url):
     jc = run(["javac", "-d", out_dir, path])
     if jc.returncode != 0:
         print(jc.stdout); log("compilation failed."); return 1
-    fqcn = f"{pkg}.{cls}"
+    fqcn = cls  # no package -> class Main compiles straight into out_dir
     try:
         samples = scrape_samples(contest_id, index, is_gym)
     except Exception as e:
@@ -520,7 +520,7 @@ def main(argv=None):
         res = create_problem(args.url, open_ide=not args.no_open)
         rating = res["rating"] if res["rating"] else "unrated"
         verb = "created" if res["created"] else "exists"
-        log(f"{verb}: {res['package']}.{res['className']}  "
+        log(f"{verb}: {res['package']}/Main  "
             f"({res['name']}, rating {rating})")
         log(res["path"])
     elif args.cmd == "serve":
