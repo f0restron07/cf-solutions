@@ -3,14 +3,16 @@
 Paste a Codeforces problem link. It:
 
 1. looks up the problem's **name** and **rating** from the official API,
-2. creates `src/cf/r800/Watermelon.java` (rating decides the package — `r800`, `r900`, …),
+2. creates `src/cf/r800/Watermelon/Main.java` (rating decides the folder — `r800`, `r900`, …),
 3. opens that file in **IntelliJ**, and
 4. **auto-commits + pushes to GitHub** every time you save.
 
 No third-party Python packages. Standard library only.
 
-> Java packages can't start with a digit, so rating folders are `r800`, `r900`, `r1600`, …
-> Unrated problems go in `runrated`.
+> Every solution is a **`public class Main` with no package**, in its own folder.
+> That means each file runs standalone — right-click *Run*, `java Main.java`, or
+> paste straight into the Codeforces submit box (Java needs the class to be `Main`).
+> Rating folders are `r800`, `r900`, `r1600`, …; unrated problems go in `runrated`.
 
 ---
 
@@ -90,7 +92,7 @@ cf-solutions/
 ├── web/index.html   # the paste box
 └── src/
     └── cf/
-        ├── r800/Watermelon.java
+        ├── r800/Watermelon/Main.java
         ├── r900/…
         └── r1600/…
 ```
