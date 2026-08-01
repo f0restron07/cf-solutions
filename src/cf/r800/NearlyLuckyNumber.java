@@ -19,7 +19,7 @@ public class NearlyLuckyNumber {
         // TODO: read input and solve
         // int n = Integer.parseInt(br.readLine().trim());
         int n=Integer.parseInt(br.readLine());
-        
+
         System.out.print(sb);
     }
 }
