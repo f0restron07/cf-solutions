@@ -17,7 +17,11 @@ public class HQ9 {
 
         // TODO: read input and solve
         // int n = Integer.parseInt(br.readLine().trim());
-
+        String s=br.read();
+        int n=s.length();
+        for(int i=0;i<n;i++){
+            if(s.charAt(i)=='H')
+        }
         System.out.print(sb);
     }
 }
