@@ -199,29 +199,34 @@ public class Main {{
 
 
 def resolve_paths(contest_id, index, meta, is_gym=False):
-    """Work out package, class name and file path. Idempotent (same problem
-    always maps to the same file) and collision-free, via a url->path index
-    that does not depend on the file's contents."""
+    """Work out the problem folder and file path. Each problem gets its own
+    folder, and the class is always `Main` (no package) so every file runs
+    standalone -- right-click Run, `java Main.java`, or paste straight into the
+    Codeforces submit box. Returns (label, prob_dir, cls, path, url) where
+    `label` is a human tag like "r800/NearlyLuckyNumber" for logs/commits.
+    Idempotent (same problem always maps to the same file) via a url->path
+    index that does not depend on the file's contents."""
     url = canonical_url(contest_id, index, is_gym)
     idx = _load_index()
-    if url in idx:  # we've seen this problem before -> reuse that exact file
+    if url in idx:  # we've seen this problem before -> reuse that exact folder
         path = os.path.join(config.REPO_DIR, idx[url])
-        leaf = os.path.basename(os.path.dirname(path))
-        cls = os.path.splitext(os.path.basename(path))[0]
-        return f"{config.BASE_PACKAGE}.{leaf}", os.path.dirname(path), cls, path, url
+        prob_dir = os.path.dirname(path)
+        leaf = os.path.basename(os.path.dirname(prob_dir))
+        prob = os.path.basename(prob_dir)
+        return f"{leaf}/{prob}", prob_dir, "Main", path, url
 
-    leaf = package_for_rating(meta["rating"])
-    pkg = f"{config.BASE_PACKAGE}.{leaf}"
-    pkg_dir = os.path.join(config.SRC_DIR, config.BASE_PACKAGE, leaf)
-    cls = sanitize_class(meta["name"])
-    path = os.path.join(pkg_dir, cls + ".java")
+    leaf = package_for_rating(meta["rating"])          # e.g. r800
+    prob = sanitize_class(meta["name"])                # e.g. NearlyLuckyNumber
+    prob_dir = os.path.join(config.SRC_DIR, config.BASE_PACKAGE, leaf, prob)
+    path = os.path.join(prob_dir, "Main.java")
     rel = os.path.relpath(path, config.REPO_DIR)
     clash = rel in set(idx.values()) or (
         os.path.exists(path) and url not in open(path, encoding="utf-8").read(600))
-    if clash:  # different problem wants the same class name -> disambiguate
-        cls = f"{cls}_{contest_id}{index}"
-        path = os.path.join(pkg_dir, cls + ".java")
-    return pkg, pkg_dir, cls, path, url
+    if clash:  # a different problem already claimed this folder -> disambiguate
+        prob = f"{prob}_{contest_id}{index}"
+        prob_dir = os.path.join(config.SRC_DIR, config.BASE_PACKAGE, leaf, prob)
+        path = os.path.join(prob_dir, "Main.java")
+    return f"{leaf}/{prob}", prob_dir, "Main", path, url
 
 
 def create_problem(url, open_ide=True):
